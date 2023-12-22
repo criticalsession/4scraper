@@ -9,6 +9,7 @@ import (
 
 	"github.com/common-nighthawk/go-figure"
 	"github.com/gocolly/colly"
+	"github.com/k0kubun/go-ansi"
 	"github.com/schollz/progressbar/v3"
 )
 
@@ -19,10 +20,10 @@ type DownloadableFile struct {
 
 func main() {
 	figure.NewFigure("4scraper", "rectangles", true).Print()
-	fmt.Println("")
+	ansi.Println("")
 
 	var threadUrl string
-	fmt.Print("> Enter thread url: ")
+	ansi.Print("> Enter thread url: ")
 	fmt.Scan(&threadUrl)
 
 	board, threadId, err := extractBoardAndThreadId(threadUrl)
@@ -39,21 +40,48 @@ func main() {
 
 	files := []DownloadableFile{}
 
+	bar := progressbar.NewOptions(-1,
+		progressbar.OptionSetWriter(ansi.NewAnsiStdout()),
+		progressbar.OptionEnableColorCodes(true),
+		progressbar.OptionShowBytes(false),
+		progressbar.OptionSetWidth(15),
+		progressbar.OptionSetDescription("[cyan][1/2][reset] Finding files:"),
+	)
+
 	c.OnHTML(".fileText > a", func(h *colly.HTMLElement) {
 		files = append(files, DownloadableFile{
 			FileName: h.Text,
 			Url:      h.Request.AbsoluteURL(h.Attr("href")),
 		})
+
+		bar.Add(1)
 	})
 
 	c.Visit(threadUrl)
 
 	if len(files) == 0 {
-		fmt.Println("No files found to download.")
+		ansi.Println("No files found to download.")
 		return
 	}
 
-	bar := progressbar.Default(int64(len(files)))
+	bar.Reset()
+	bar = progressbar.NewOptions(len(files),
+		progressbar.OptionSetWriter(ansi.NewAnsiStdout()),
+		progressbar.OptionEnableColorCodes(true),
+		progressbar.OptionShowBytes(false),
+		progressbar.OptionSetElapsedTime(true),
+		progressbar.OptionSetPredictTime(true),
+		progressbar.OptionShowCount(),
+		progressbar.OptionFullWidth(),
+		progressbar.OptionSetDescription("[cyan][2/2][reset] Downloading:"),
+		progressbar.OptionSetTheme(progressbar.Theme{
+			Saucer:        "[green]=[reset]",
+			SaucerHead:    "[green]>[reset]",
+			SaucerPadding: " ",
+			BarStart:      "[",
+			BarEnd:        "]",
+		}))
+
 	for _, file := range files {
 		err := DownloadFile(file.Url, downloadDir, file.FileName)
 
@@ -68,7 +96,7 @@ func main() {
 	// 	fmt.Println("-> Visiting", r.URL.String())
 	// })
 
-	fmt.Println("Download finished. Thank you for using 4scraper!")
+	ansi.Println("\nDownload finished. Thank you for using 4scraper!")
 }
 
 func extractBoardAndThreadId(urlStr string) (string, string, error) {
