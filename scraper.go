@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/common-nighthawk/go-figure"
 	"github.com/gocolly/colly"
 	"github.com/schollz/progressbar/v3"
 )
@@ -17,6 +18,9 @@ type DownloadableFile struct {
 }
 
 func main() {
+	figure.NewFigure("4scraper", "rectangles", true).Print()
+	fmt.Println("")
+
 	var threadUrl string
 	fmt.Print("> Enter thread url: ")
 	fmt.Scan(&threadUrl)
