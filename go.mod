@@ -1,4 +1,4 @@
-module 4-chan-scraper
+module 4scraper
 
 go 1.21.5
 
