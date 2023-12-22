@@ -20,6 +20,7 @@ type DownloadableFile struct {
 
 func main() {
 	figure.NewFigure("4scraper", "rectangles", true).Print()
+	ansi.Println("https://github.com/criticalsession/4scraper")
 	ansi.Println("")
 
 	var threadUrl string
