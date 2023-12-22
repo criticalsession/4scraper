@@ -12,10 +12,7 @@ import (
 func DownloadFile(url, dir, filename string) error {
 	if !DirExists(dir) {
 		os.MkdirAll(dir, os.ModePerm)
-		fmt.Println("---> Created directory:", dir)
 	}
-
-	fmt.Printf("---> Downloading... ")
 
 	resp, err := http.Get(url)
 	if err != nil {
@@ -36,7 +33,6 @@ func DownloadFile(url, dir, filename string) error {
 	defer file.Close()
 
 	_, err = io.Copy(file, resp.Body)
-	fmt.Println(" done.")
 
 	return err
 }

@@ -1,7 +1,9 @@
 package main
 
 import (
+	"errors"
 	"fmt"
+	"log"
 	"net/url"
 	"strings"
 
@@ -9,15 +11,14 @@ import (
 )
 
 func main() {
-	fmt.Println("* 4scraper *")
-
 	var threadUrl string
-	fmt.Print("> Thread url: ")
+	fmt.Print("> Enter thread url: ")
 	fmt.Scan(&threadUrl)
 
 	board, threadId, err := extractBoardAndThreadId(threadUrl)
 	if err != nil {
-		panic(err)
+		log.Fatalln("ERROR:", err.Error())
+		return
 	}
 
 	downloadDir := fmt.Sprintf("downloads/%s/%s", board, threadId)
@@ -27,20 +28,19 @@ func main() {
 	)
 
 	c.OnHTML(".fileText > a", func(h *colly.HTMLElement) {
-		fmt.Printf("--> Found file: %v\n", h.Text)
 		err := DownloadFile(h.Request.AbsoluteURL(h.Attr("href")), downloadDir, h.Text)
 		if err != nil {
 			panic(err.Error())
 		}
 	})
 
-	c.OnRequest(func(r *colly.Request) {
-		fmt.Println("-> Visiting", r.URL.String())
-	})
+	// c.OnRequest(func(r *colly.Request) {
+	// 	fmt.Println("-> Visiting", r.URL.String())
+	// })
 
 	c.Visit(threadUrl)
 
-	fmt.Println("Done.")
+	fmt.Println("Download finished. Thank you for using 4scraper!")
 }
 
 func extractBoardAndThreadId(urlStr string) (string, string, error) {
@@ -49,8 +49,16 @@ func extractBoardAndThreadId(urlStr string) (string, string, error) {
 		return "", "", err
 	}
 
+	if !strings.Contains(urlStr, "boards.4chan.org") {
+		return "", "", errors.New("Not a 4chan URL")
+	}
+
 	urlStr = strings.TrimPrefix(parsed.Path, "boards.4chan.org")
 	urlStr = strings.TrimPrefix(urlStr, "/")
+
+	if len(strings.Split(urlStr, "/")) < 3 {
+		return "", "", errors.New("Not a valid thread URL")
+	}
 
 	board := strings.Split(urlStr, "/")[0]
 	threadId := strings.Split(urlStr, "/")[2]
