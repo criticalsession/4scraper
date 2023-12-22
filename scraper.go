@@ -14,14 +14,18 @@ func main() {
 	)
 
 	c.OnHTML(".fileText > a", func(h *colly.HTMLElement) {
-		fmt.Printf("--> Text: %v, URL: %v\n", h.Text, h.Request.AbsoluteURL(h.Attr("href")))
+		fmt.Printf("--> Downloading: %v\n", h.Text)
+		err := DownloadFile(h.Request.AbsoluteURL(h.Attr("href")), h.Text)
+		if err != nil {
+			panic(err.Error())
+		}
 	})
 
 	c.OnRequest(func(r *colly.Request) {
 		fmt.Println("-> Visiting", r.URL.String())
 	})
 
-	c.Visit("https://boards.4chan.org/x/thread/36739881")
+	c.Visit("https://boards.4chan.org/x/thread/36750486")
 
 	fmt.Println("Done.")
 }
