@@ -8,7 +8,13 @@ import (
 	"strings"
 
 	"github.com/gocolly/colly"
+	"github.com/schollz/progressbar/v3"
 )
+
+type DownloadableFile struct {
+	Url      string
+	FileName string
+}
 
 func main() {
 	var threadUrl string
@@ -27,18 +33,36 @@ func main() {
 		colly.AllowedDomains("boards.4chan.org", "i.4cdn.org"),
 	)
 
+	files := []DownloadableFile{}
+
 	c.OnHTML(".fileText > a", func(h *colly.HTMLElement) {
-		err := DownloadFile(h.Request.AbsoluteURL(h.Attr("href")), downloadDir, h.Text)
+		files = append(files, DownloadableFile{
+			FileName: h.Text,
+			Url:      h.Request.AbsoluteURL(h.Attr("href")),
+		})
+	})
+
+	c.Visit(threadUrl)
+
+	if len(files) == 0 {
+		fmt.Println("No files found to download.")
+		return
+	}
+
+	bar := progressbar.Default(int64(len(files)))
+	for _, file := range files {
+		err := DownloadFile(file.Url, downloadDir, file.FileName)
+
 		if err != nil {
 			panic(err.Error())
 		}
-	})
+
+		bar.Add(1)
+	}
 
 	// c.OnRequest(func(r *colly.Request) {
 	// 	fmt.Println("-> Visiting", r.URL.String())
 	// })
-
-	c.Visit(threadUrl)
 
 	fmt.Println("Download finished. Thank you for using 4scraper!")
 }
