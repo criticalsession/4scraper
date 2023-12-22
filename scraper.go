@@ -9,7 +9,11 @@ import (
 )
 
 func main() {
-	threadUrl := "https://boards.4chan.org/x/thread/36750486"
+	fmt.Println("* 4scraper *")
+
+	var threadUrl string
+	fmt.Print("> Thread url: ")
+	fmt.Scan(&threadUrl)
 
 	board, threadId, err := extractBoardAndThreadId(threadUrl)
 	if err != nil {
@@ -17,8 +21,6 @@ func main() {
 	}
 
 	downloadDir := fmt.Sprintf("downloads/%s/%s", board, threadId)
-
-	fmt.Println("* 4scraper *")
 
 	c := colly.NewCollector(
 		colly.AllowedDomains("boards.4chan.org", "i.4cdn.org"),
