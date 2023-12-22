@@ -2,15 +2,20 @@ package main
 
 import (
 	"fmt"
+	"net/url"
+	"strings"
 
 	"github.com/gocolly/colly"
 )
 
 func main() {
-	board := "x"
-	threadId := "36750486"
+	threadUrl := "https://boards.4chan.org/x/thread/36750486"
 
-	threadUrl := fmt.Sprintf("https://boards.4chan.org/%s/thread/%s", board, threadId)
+	board, threadId, err := extractBoardAndThreadId(threadUrl)
+	if err != nil {
+		panic(err)
+	}
+
 	downloadDir := fmt.Sprintf("downloads/%s/%s", board, threadId)
 
 	fmt.Println("* 4scraper *")
@@ -34,4 +39,19 @@ func main() {
 	c.Visit(threadUrl)
 
 	fmt.Println("Done.")
+}
+
+func extractBoardAndThreadId(urlStr string) (string, string, error) {
+	parsed, err := url.Parse(urlStr)
+	if err != nil {
+		return "", "", err
+	}
+
+	urlStr = strings.TrimPrefix(parsed.Path, "boards.4chan.org")
+	urlStr = strings.TrimPrefix(urlStr, "/")
+
+	board := strings.Split(urlStr, "/")[0]
+	threadId := strings.Split(urlStr, "/")[2]
+
+	return board, threadId, nil
 }
