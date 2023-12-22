@@ -13,9 +13,11 @@ func main() {
 		colly.AllowedDomains("boards.4chan.org", "i.4cdn.org"),
 	)
 
+	downloadDir := "downloads"
+
 	c.OnHTML(".fileText > a", func(h *colly.HTMLElement) {
-		fmt.Printf("--> Downloading: %v\n", h.Text)
-		err := DownloadFile(h.Request.AbsoluteURL(h.Attr("href")), h.Text)
+		fmt.Printf("--> Found file: %v\n", h.Text)
+		err := DownloadFile(h.Request.AbsoluteURL(h.Attr("href")), downloadDir, h.Text)
 		if err != nil {
 			panic(err.Error())
 		}
