@@ -27,7 +27,7 @@ Click on the thumbnail below to watch the **shortest video tutorial** of your li
 
 ### Args and Flags [v1.1]
 
-Added in v1.1, 4scraper can now be executed in silent mode by setting the flag and passing a URL as arg. Here's a full description of flags available. More information is available at `4scraper.exe --help`. For brevity I'm using `4scraper.exe` but on linux it would be `./4scraper.bin`:
+Added in v1.1, **4scraper** can now be executed in silent mode by setting the flag and passing a URL as arg. Here's a full description of flags available. More information is available at `4scraper.exe --help`. For brevity I'm using `4scraper.exe` but on linux it would be `./4scraper.bin`:
 
 ```
 Usage: 4scraper.exe [options] [URL]
