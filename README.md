@@ -25,6 +25,29 @@ Click on the thumbnail below to watch the **shortest video tutorial** of your li
     <img src="https://img.youtube.com/vi/2cLXpOMFGdc/0.jpg" alt="Watch the tutorial" width="240"/>
 </a>
 
+### Args and Flags [v1.1]
+
+Added in v1.1, 4scraper can now be executed in silent mode by setting the flag and passing a URL as arg. Here's a full description of flags available. More information is available at `4scraper.exe --help`. For brevity I'm using `4scraper.exe` but on linux it would be `./4scraper.bin`:
+
+```
+Usage: 4scraper.exe [options] [URL]
+
+Options:
+  -h, --help         Show this help message and exit
+  -s, --silent       Run in silent mode (no output), requires URL
+  -v, --version      Show version number and exit
+
+Arguments:
+  URL                Full 4chan thread URL to scrape
+```
+
+In short:
+- `4scraper.exe` will execute as normal; it will prompt you for a `thread URL` and display verbose progress information
+- `4scraper.exe https://boards.4chan.org/g/thread/76759434` will execute normally (verbose) but won't ask you for a `thread URL`
+- `4scraper.exe --silent https://boards.4chan.org/g/thread/76759434` will execute using the `thread URL` provided and won't display verbose output, progress, etc.
+
+**NOTE:** If no `URL` is provided, the `--silent` flag will be ignored and **4scraper** will ask you to enter a thread URL as if you executed without flags.
+ 
 ## How it works
 
 **4scraper** was developed as an exercise in getting my hands dirty with Go, so there's nothing wild going on behind the scenes. Still, this is how it works, in case anyone's interested.
@@ -42,7 +65,7 @@ Feel free to use the Issues tab above (or [click here](https://github.com/critic
 ## Things I want to add
 
 - [ ] Optional config file for basic settings (folder organization, types of files to download)
-- [ ] Args to skip input with zero feedback to allow for automation
+- [x] Args to skip input with zero feedback to allow for automation
 
 ## Like 4scraper?
 
