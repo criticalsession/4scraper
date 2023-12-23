@@ -15,7 +15,7 @@
 
 ## How to install
 
-Head on over to the <a href="https://github.com/criticalsession/4scraper/releases">releases tab</a> and pick the version you need. There's no setup or installation required; simply run the downloaded `exe` or `sh` file and you're good to go. Or you can download the code and build it yourself.
+Head on over to the <a href="https://github.com/criticalsession/4scraper/releases">releases tab</a> and pick the version you need. There's no setup or installation required; simply run the downloaded `exe` or `bin` file and you're good to go. Or you can download the code and build it yourself.
 
 ## How to use
 
