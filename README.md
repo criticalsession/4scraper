@@ -3,7 +3,7 @@
 ## 4chan scraper CLI tool written in Go that downloads all images, videos and gifs from a 4chan thread (no setup required)!
 
 <p align="center">
-  <img src="https://github.com/criticalsession/4scraper/blob/main/docs/scraper-main.png?raw=true" />
+  <img src="https://github.com/criticalsession/4scraper/blob/main/docs/scraper-main.1_2.png?raw=true" />
 </p>
 
 <p align="center"><b>Version: 1.2</b></p>
