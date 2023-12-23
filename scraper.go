@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/url"
+	"os"
 	"strings"
 
 	"github.com/common-nighthawk/go-figure"
@@ -19,13 +20,20 @@ type DownloadableFile struct {
 }
 
 func main() {
-	figure.NewFigure("4scraper", "rectangles", true).Print()
-	ansi.Println("https://github.com/criticalsession/4scraper")
-	ansi.Println("")
+	silent, threadUrl := ParseFlags()
 
-	var threadUrl string
-	ansi.Print("> Enter thread url: ")
-	fmt.Scan(&threadUrl)
+	if !silent {
+		figure.NewFigure("4scraper", "rectangles", true).Print()
+		fmt.Println("https://github.com/criticalsession/4scraper")
+		fmt.Println("")
+
+		if threadUrl == "" {
+			fmt.Print("> Enter thread url: ")
+			fmt.Fscan(os.Stdin, &threadUrl)
+		} else {
+			fmt.Println("Using arg:", threadUrl)
+		}
+	}
 
 	board, threadId, err := extractBoardAndThreadId(threadUrl)
 	if err != nil {
@@ -55,13 +63,15 @@ func main() {
 			Url:      h.Request.AbsoluteURL(h.Attr("href")),
 		})
 
-		bar.Add(1)
+		if !silent {
+			bar.Add(1)
+		}
 	})
 
 	c.Visit(threadUrl)
 
-	if len(files) == 0 {
-		ansi.Println("No files found to download.")
+	if len(files) == 0 && !silent {
+		fmt.Println("No files found to download.")
 		return
 	}
 
@@ -90,14 +100,18 @@ func main() {
 			panic(err.Error())
 		}
 
-		bar.Add(1)
+		if !silent {
+			bar.Add(1)
+		}
 	}
 
 	// c.OnRequest(func(r *colly.Request) {
 	// 	fmt.Println("-> Visiting", r.URL.String())
 	// })
 
-	ansi.Println("\nDownload finished. Thank you for using 4scraper!")
+	if !silent {
+		fmt.Println("\nDownload finished. Thank you for using 4scraper!")
+	}
 }
 
 func extractBoardAndThreadId(urlStr string) (string, string, error) {
