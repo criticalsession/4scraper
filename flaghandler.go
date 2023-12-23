@@ -41,9 +41,9 @@ func ParseFlags() (bool, string) {
 }
 
 func printHelp() {
-	toolName := "4scraper"
+	toolName := "./4scraper.bin"
 	if runtime.GOOS == "windows" {
-		toolName += ".exe"
+		toolName = "4scraper.exe"
 	}
 
 	fmt.Printf(`Usage: %s [options] [URL]
