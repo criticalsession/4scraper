@@ -4,6 +4,8 @@ go 1.21.5
 
 require github.com/gocolly/colly v1.2.0
 
+require github.com/google/uuid v1.5.0 // indirect
+
 require github.com/k0kubun/go-ansi v0.0.0-20180517002512-3bf9e2903213 // direct
 
 require (

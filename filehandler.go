@@ -22,3 +22,7 @@ func FileExists(dir, filename string) bool {
 func DirExists(dir string) bool {
 	return FileExists(dir, "")
 }
+
+func GetExtension(filename string) string {
+	return filepath.Ext(filename)
+}

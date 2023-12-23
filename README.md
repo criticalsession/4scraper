@@ -6,6 +6,8 @@
   <img src="https://github.com/criticalsession/4scraper/blob/main/docs/scraper-main.png?raw=true" />
 </p>
 
+<p align="center"><b>Version: 1.2</b></p>
+
 **4scraper** is an open source command line tool written in Go that quickly finds and downloads all images, videos and gifs in a given thread. No setup or installation required, and no fluff.
 
 * Run **4scraper**
@@ -13,11 +15,24 @@
 * Wait for the download to finish
 * Profit
 
-## How to install
+## Contents
+
+- [1. How to install](#1-how-to-install)
+- [2. How to use](#2-how-to-use)
+    - [2.1 Args and Flags](#21-args-and-flags-v11)
+    - [2.2 Configuration](#22-configuration-v12)
+- [3. How it works](#3-how-it-works)
+- [4. Found a bug? Have suggestions?](#4-found-a-bug-have-suggestions)
+- [5. Things I want to add](#5-things-i-want-to-add)
+- [6. Like 4scraper?](#6-like-4scraper)
+
+## 1. How to install
 
 Head on over to the <a href="https://github.com/criticalsession/4scraper/releases">releases tab</a> and pick the version you need. There's no setup or installation required; simply run the downloaded `exe` or `bin` file and you're good to go. Or you can download the code and build it yourself.
 
-## How to use
+**Optional:** Create a config file as outlined in [2.2 Configuration](#22-configuration-v12)
+
+## 2. How to use
 
 Click on the thumbnail below to watch the **shortest video tutorial** of your life (it's a YouTube link).
 
@@ -25,7 +40,7 @@ Click on the thumbnail below to watch the **shortest video tutorial** of your li
     <img src="https://img.youtube.com/vi/2cLXpOMFGdc/0.jpg" alt="Watch the tutorial" width="240"/>
 </a>
 
-### Args and Flags [v1.1]
+### 2.1 Args and Flags [v1.1]
 
 Added in v1.1, **4scraper** can now be executed in silent mode by setting the flag and passing a URL as arg. Here's a full description of flags available. More information is available at `4scraper.exe --help`. For brevity I'm using `4scraper.exe` but on linux it would be `./4scraper.bin`:
 
@@ -47,8 +62,30 @@ In short:
 - `4scraper.exe --silent https://boards.4chan.org/g/thread/76759434` will execute using the `thread URL` provided and won't display verbose output, progress, etc.
 
 **NOTE:** If no `URL` is provided, the `--silent` flag will be ignored and **4scraper** will ask you to enter a thread URL as if you executed without flags.
- 
-## How it works
+
+### 2.2 Configuration [v1.2]
+
+As of v1.2 you can add a configuration file to setup basic settings. This is entirely optional and the software will run even if there's no config file set. If you'd like to create and setup a config file read on.
+
+1. Create a file named `4scraper.config` in the same directory as the **4scraper** executable
+2. Copy and paste the following inside it and save
+```
+# 4scraper config file
+BoardDir = true
+ThreadDir = true
+UseOriginalFilename = true
+Extensions = "jpeg,jpg,png,gif,webp,bpm,tiff,svg,mp4,mov,avi,webm,flv"
+```
+3. Lines starting with `#` are ignored
+4. All settings should be in the format `[key] = [value]`
+5. These are the settings you can adjust:
+      1. `BoardDir`: if `true` a directory with the board code will be created in the `downloads` directory for organization (e.g. `downloads/g/`)
+      2. `ThreadDir`: if `true` a directory with the thread id will be created in the `downloads` or `board` directory for organization (e.g. `downloads/g/4568995/`)
+      3. `Extensions`: any file that isn't in the list won't be downloaded
+      4. `UseOriginalFilename`: if `false` a new unique filename will be generated (using `UUID`)
+6. If both `BoardDir` and `ThreadDir` are turned off, all downloaded files will go in the `downloads/` directory
+
+## 3. How it works
 
 **4scraper** was developed as an exercise in getting my hands dirty with Go, so there's nothing wild going on behind the scenes. Still, this is how it works, in case anyone's interested.
 
@@ -58,15 +95,15 @@ In short:
 4. We create directories in this structure: `downloads/<board>/<threadId>` to hold all downloaded files
 5. For each `DownloadableFile` found we first check if the filename already exists (and append a random number to the filename if it does) then we download it from 4chan
 
-## Found a bug? Have suggestions?
+## 4. Found a bug? Have suggestions?
 
 Feel free to use the Issues tab above (or [click here](https://github.com/criticalsession/4scraper/issues)) if you've found bugs, have problems running **4scraper**, have suggestions for improvements or general tips on how I can make the Go code better.
 
-## Things I want to add
+## 5. Things I want to add
 
 - [ ] Optional config file for basic settings (folder organization, types of files to download)
 - [x] Args to skip input with zero feedback to allow for automation
 
-## Like 4scraper?
+## 6. Like 4scraper?
 
 If you're feeling generous, buy me a beer! - https://www.buymeacoffee.com/criticalsession 🍺❤️

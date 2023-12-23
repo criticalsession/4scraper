@@ -83,5 +83,5 @@ Source:
 }
 
 func printVersion() {
-	fmt.Println("4scraper version 1.1")
+	fmt.Println("4scraper version 1.2")
 }

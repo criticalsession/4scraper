@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/url"
 	"os"
+	"slices"
 	"strings"
 
 	"github.com/common-nighthawk/go-figure"
@@ -20,10 +21,14 @@ type DownloadableFile struct {
 }
 
 func main() {
+	// setup
 	silent, threadUrl := ParseFlags()
+	config := ReadConfig()
 
+	// head
 	if !silent {
 		figure.NewFigure("4scraper", "rectangles", true).Print()
+		fmt.Println("v1.2")
 		fmt.Println("https://github.com/criticalsession/4scraper")
 		fmt.Println("")
 
@@ -35,13 +40,21 @@ func main() {
 		}
 	}
 
+	// build download dir
 	board, threadId, err := extractBoardAndThreadId(threadUrl)
 	if err != nil {
 		log.Fatalln("ERROR:", err.Error())
 		return
 	}
 
-	downloadDir := fmt.Sprintf("downloads/%s/%s", board, threadId)
+	downloadDir := "downloads"
+	if config.BoardDir {
+		downloadDir += "/" + board
+	}
+
+	if config.ThreadDir {
+		downloadDir += "/" + threadId
+	}
 
 	c := colly.NewCollector(
 		colly.AllowedDomains("boards.4chan.org", "i.4cdn.org"),
@@ -49,6 +62,7 @@ func main() {
 
 	files := []DownloadableFile{}
 
+	// find files
 	bar := progressbar.NewOptions(-1,
 		progressbar.OptionSetWriter(ansi.NewAnsiStdout()),
 		progressbar.OptionEnableColorCodes(true),
@@ -58,10 +72,7 @@ func main() {
 	)
 
 	c.OnHTML(".fileText > a", func(h *colly.HTMLElement) {
-		files = append(files, DownloadableFile{
-			FileName: h.Text,
-			Url:      h.Request.AbsoluteURL(h.Attr("href")),
-		})
+		addLinkToDownloadableFiles(h, &config.Extensions, &files)
 
 		if !silent {
 			bar.Add(1)
@@ -75,6 +86,7 @@ func main() {
 		return
 	}
 
+	// download files
 	bar.Reset()
 	bar = progressbar.NewOptions(len(files),
 		progressbar.OptionSetWriter(ansi.NewAnsiStdout()),
@@ -94,20 +106,16 @@ func main() {
 		}))
 
 	for _, file := range files {
-		err := DownloadFile(file.Url, downloadDir, file.FileName)
+		err := DownloadFile(file.Url, downloadDir, file.FileName, config.UseOriginalFilename)
 
 		if err != nil {
-			panic(err.Error())
+			log.Fatalln("ERROR:", err.Error())
 		}
 
 		if !silent {
 			bar.Add(1)
 		}
 	}
-
-	// c.OnRequest(func(r *colly.Request) {
-	// 	fmt.Println("-> Visiting", r.URL.String())
-	// })
 
 	if !silent {
 		fmt.Println("\nDownload finished. Thank you for using 4scraper!")
@@ -135,4 +143,26 @@ func extractBoardAndThreadId(urlStr string) (string, string, error) {
 	threadId := strings.Split(urlStr, "/")[2]
 
 	return board, threadId, nil
+}
+
+func addLinkToDownloadableFiles(h *colly.HTMLElement, extensions *[]string, files *[]DownloadableFile) {
+	fileUrl := h.Request.AbsoluteURL(h.Attr("href"))
+
+	// check if extension is downloadable
+	parsed, err := url.Parse(fileUrl)
+	if err != nil {
+		log.Fatalln("ERROR:", err.Error())
+	}
+
+	fileUrlSplit := strings.Split(parsed.Path, "/")
+	ext := fileUrlSplit[len(fileUrlSplit)-1]
+	ext = strings.Split(ext, ".")[len(strings.Split(ext, "."))-1]
+
+	if slices.Contains(*extensions, ext) {
+		// add file to files to download
+		*files = append(*files, DownloadableFile{
+			FileName: h.Text,
+			Url:      fileUrl,
+		})
+	}
 }
