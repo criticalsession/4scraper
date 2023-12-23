@@ -101,7 +101,7 @@ Feel free to use the Issues tab above (or [click here](https://github.com/critic
 
 ## 5. Things I want to add
 
-- [ ] Optional config file for basic settings (folder organization, types of files to download)
+- [x] Optional config file for basic settings (folder organization, types of files to download)
 - [x] Args to skip input with zero feedback to allow for automation
 
 ## 6. Like 4scraper?
