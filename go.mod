@@ -4,7 +4,7 @@ go 1.21.5
 
 require github.com/gocolly/colly v1.2.0
 
-require github.com/google/uuid v1.5.0 // indirect
+require github.com/google/uuid v1.5.0 // direct
 
 require github.com/k0kubun/go-ansi v0.0.0-20180517002512-3bf9e2903213 // direct
 
@@ -20,7 +20,7 @@ require (
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/kennygrant/sanitize v1.2.4 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
-	github.com/mitchellh/colorstring v0.0.0-20190213212951-d06e56a500db // indirect
+	github.com/mitchellh/colorstring v0.0.0-20190213212951-d06e56a500db // direct
 	github.com/rivo/uniseg v0.4.4 // indirect
 	github.com/saintfish/chardet v0.0.0-20230101081208-5e3ef4b5456d // indirect
 	github.com/schollz/progressbar/v3 v3.14.1 // direct
