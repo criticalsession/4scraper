@@ -24,7 +24,8 @@
 - [3. How it works](#3-how-it-works)
 - [4. Found a bug? Have suggestions?](#4-found-a-bug-have-suggestions)
 - [5. Things I want to add](#5-things-i-want-to-add)
-- [6. Like 4scraper?](#6-like-4scraper)
+- [6. Known issues](#6-known-issues)
+- [7. Like 4scraper?](#7-like-4scraper)
 
 ## 1. How to install
 
@@ -103,7 +104,12 @@ Feel free to use the Issues tab above (or [click here](https://github.com/critic
 
 - [x] Optional config file for basic settings (folder organization, types of files to download)
 - [x] Args to skip input with zero feedback to allow for automation
+- [x] --output flag
 
-## 6. Like 4scraper?
+## 6. Known issues
+
+- [ ] Generating unique filenames is adding an extra `.` before extension
+
+## 7. Like 4scraper?
 
 If you're feeling generous, buy me a beer! - https://www.buymeacoffee.com/criticalsession 🍺❤️
