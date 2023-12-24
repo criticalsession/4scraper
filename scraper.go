@@ -3,7 +3,6 @@ package main
 import (
 	"errors"
 	"fmt"
-	"log"
 	"net/url"
 	"os"
 	"slices"
@@ -12,6 +11,7 @@ import (
 	"github.com/common-nighthawk/go-figure"
 	"github.com/gocolly/colly"
 	"github.com/k0kubun/go-ansi"
+	"github.com/mitchellh/colorstring"
 	"github.com/schollz/progressbar/v3"
 )
 
@@ -22,37 +22,37 @@ type DownloadableFile struct {
 
 func main() {
 	// setup
-	silent, threadUrl := ParseFlags()
-	config := ReadConfig()
+	silent, url := ParseFlags()
+	conf := ReadConfig()
 
 	// head
 	if !silent {
 		figure.NewFigure("4scraper", "rectangles", true).Print()
-		fmt.Println("v1.2")
+		fmt.Println(v)
 		fmt.Println("https://github.com/criticalsession/4scraper")
 		fmt.Println("")
 
-		if threadUrl == "" {
+		if url == "" {
 			fmt.Print("> Enter thread url: ")
-			fmt.Fscan(os.Stdin, &threadUrl)
+			fmt.Fscan(os.Stdin, &url)
 		} else {
-			fmt.Println("Using arg:", threadUrl)
+			fmt.Println("Using arg url:", url)
 		}
 	}
 
 	// build download dir
-	board, threadId, err := extractBoardAndThreadId(threadUrl)
+	board, threadId, err := extractBoardAndThreadId(url)
 	if err != nil {
-		log.Fatalln("ERROR:", err.Error())
+		logErr(err)
 		return
 	}
 
 	downloadDir := "downloads"
-	if config.BoardDir {
+	if conf.BoardDir {
 		downloadDir += "/" + board
 	}
 
-	if config.ThreadDir {
+	if conf.ThreadDir {
 		downloadDir += "/" + threadId
 	}
 
@@ -72,14 +72,14 @@ func main() {
 	)
 
 	c.OnHTML(".fileText > a", func(h *colly.HTMLElement) {
-		addLinkToDownloadableFiles(h, &config.Extensions, &files)
+		addLinkToDownloadableFiles(h, &conf.Extensions, &files)
 
 		if !silent {
 			bar.Add(1)
 		}
 	})
 
-	c.Visit(threadUrl)
+	c.Visit(url)
 
 	if len(files) == 0 && !silent {
 		fmt.Println("No files found to download.")
@@ -106,10 +106,10 @@ func main() {
 		}))
 
 	for _, file := range files {
-		err := DownloadFile(file.Url, downloadDir, file.FileName, config.UseOriginalFilename)
+		err := DownloadFile(file.Url, downloadDir, file.FileName, conf.UseOriginalFilename)
 
 		if err != nil {
-			log.Fatalln("ERROR:", err.Error())
+			logErr(err)
 		}
 
 		if !silent {
@@ -151,11 +151,12 @@ func addLinkToDownloadableFiles(h *colly.HTMLElement, extensions *[]string, file
 	// check if extension is downloadable
 	parsed, err := url.Parse(fileUrl)
 	if err != nil {
-		log.Fatalln("ERROR:", err.Error())
+		logErr(err)
+		return
 	}
 
-	fileUrlSplit := strings.Split(parsed.Path, "/")
-	ext := fileUrlSplit[len(fileUrlSplit)-1]
+	urlSpl := strings.Split(parsed.Path, "/")
+	ext := urlSpl[len(urlSpl)-1]
 	ext = strings.Split(ext, ".")[len(strings.Split(ext, "."))-1]
 
 	if slices.Contains(*extensions, ext) {
@@ -165,4 +166,8 @@ func addLinkToDownloadableFiles(h *colly.HTMLElement, extensions *[]string, file
 			Url:      fileUrl,
 		})
 	}
+}
+
+func logErr(err error) {
+	colorstring.Printf("[red]ERROR: %s\n", err.Error())
 }

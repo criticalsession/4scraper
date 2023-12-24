@@ -14,7 +14,7 @@ type Config struct {
 }
 
 func ReadConfig() Config {
-	var config = Config{ // set defaults
+	var c = Config{ // set defaults
 		BoardDir:            true,
 		ThreadDir:           true,
 		UseOriginalFilename: true,
@@ -27,7 +27,7 @@ func ReadConfig() Config {
 	if FileExists("", configFile) {
 		file, err := os.Open(configFile)
 		if err != nil {
-			return config
+			return c
 		}
 		defer file.Close()
 
@@ -41,28 +41,28 @@ func ReadConfig() Config {
 
 			parts := strings.Split(line, "=")
 			key := strings.ToLower(strings.TrimSpace(parts[0]))
-			value := strings.Replace(
+			val := strings.Replace(
 				strings.ToLower(strings.TrimSpace(parts[1])),
 				"\"", "", -1)
 
 			switch key {
 			case "boarddir":
-				config.BoardDir = value == "true"
+				c.BoardDir = val == "true"
 			case "threaddir":
-				config.ThreadDir = value == "true"
+				c.ThreadDir = val == "true"
 			case "useoriginalfilename":
-				config.UseOriginalFilename = value == "true"
+				c.UseOriginalFilename = val == "true"
 			case "extensions":
-				if len(value) == 0 { // empty
-					config.Extensions = []string{}
-				} else if strings.Index(value, ",") == -1 { // single extension
-					config.Extensions = []string{value}
+				if len(val) == 0 { // empty
+					c.Extensions = []string{}
+				} else if strings.Index(val, ",") == -1 { // single extension
+					c.Extensions = []string{val}
 				} else {
-					extensions := strings.Split(value, ",")
-					config.Extensions = []string{}
+					extensions := strings.Split(val, ",")
+					c.Extensions = []string{}
 					for _, ext := range extensions {
 						if len(strings.TrimSpace(ext)) > 0 {
-							config.Extensions = append(config.Extensions, strings.TrimSpace(ext))
+							c.Extensions = append(c.Extensions, strings.TrimSpace(ext))
 						}
 					}
 				}
@@ -70,5 +70,5 @@ func ReadConfig() Config {
 		}
 	}
 
-	return config
+	return c
 }

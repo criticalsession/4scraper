@@ -7,18 +7,20 @@ import (
 	"runtime"
 )
 
+const v = "v1.3" // unreleased
+
 func ParseFlags() (bool, string) {
-	var silent, help, version bool
+	var sil, help, ver bool
 	var url string
 
-	flag.BoolVar(&silent, "silent", false, "run without output, requires [url] arg")
-	flag.BoolVar(&silent, "s", false, "run without output, requires [url] arg")
+	flag.BoolVar(&sil, "silent", false, "run without output, requires [url] arg")
+	flag.BoolVar(&sil, "s", false, "run without output, requires [url] arg")
 
 	flag.BoolVar(&help, "help", false, "show help")
 	flag.BoolVar(&help, "h", false, "show help")
 
-	flag.BoolVar(&version, "version", false, "show version")
-	flag.BoolVar(&version, "v", false, "show version")
+	flag.BoolVar(&ver, "version", false, "show version")
+	flag.BoolVar(&ver, "v", false, "show version")
 
 	flag.Usage = printHelp
 	flag.Parse()
@@ -29,21 +31,21 @@ func ParseFlags() (bool, string) {
 		if help {
 			printHelp()
 			os.Exit(0)
-		} else if version {
+		} else if ver {
 			printVersion()
 			os.Exit(0)
 		}
 
-		silent = false // silent cannot be used without a url
+		sil = false // silent cannot be used without a url
 	}
 
-	return silent, url
+	return sil, url
 }
 
 func printHelp() {
-	toolName := "./4scraper.bin"
+	n := "./4scraper.bin"
 	if runtime.GOOS == "windows" {
-		toolName = "4scraper.exe"
+		n = "4scraper.exe"
 	}
 
 	fmt.Printf(`Usage: %s [options] [URL]
@@ -79,9 +81,9 @@ Examples:
 
 Source:
   https://github.com/criticalsession/4scraper
-`, toolName, toolName, toolName, toolName)
+`, n, n, n, n)
 }
 
 func printVersion() {
-	fmt.Println("4scraper version 1.2")
+	fmt.Println("4scraper", v)
 }
