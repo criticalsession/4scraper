@@ -104,7 +104,7 @@ Feel free to use the Issues tab above (or [click here](https://github.com/critic
 
 - [x] Optional config file for basic settings (folder organization, types of files to download)
 - [x] Args to skip input with zero feedback to allow for automation
-- [x] --output flag
+- [ ] --output flag
 
 ## 6. Known issues
 
