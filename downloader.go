@@ -32,7 +32,7 @@ func DownloadFile(url, dir, filename string, useOriginalFilename bool) error {
 
 	baseName, ext := SplitFilename(filename)
 	baseName = sanitize.AlphaNumeric(baseName, false)
-	filename = fmt.Sprintf("%s.%s", baseName, ext)
+	filename = fmt.Sprintf("%s%s", baseName, ext)
 
 	if FileExists(dir, filename) {
 		filename = tryGenNewFilename(dir, filename)
@@ -68,5 +68,5 @@ func genUniqueFilename(filename string) string {
 	uniqueId := strings.Replace(uuid.NewString(), "-", "", -1)
 	ext := GetExtension(filename)
 
-	return fmt.Sprintf("%s.%s", uniqueId, ext)
+	return fmt.Sprintf("%s%s", uniqueId, ext)
 }

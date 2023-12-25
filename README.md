@@ -102,11 +102,11 @@ Feel free to use the Issues tab above (or [click here](https://github.com/critic
 
 - [x] Optional config file for basic settings (folder organization, types of files to download)
 - [x] Args to skip input with zero feedback to allow for automation
-- [ ] --output flag
+- [x] --output flag
 
 ## 6. Known issues
 
-- [ ] Generating unique filenames is adding an extra `.` before extension
+- [x] Generating unique filenames is adding an extra `.` before extension
 
 ## 7. Like 4scraper?
 
