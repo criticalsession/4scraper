@@ -6,7 +6,7 @@
   <img src="https://github.com/criticalsession/4scraper/blob/feat/config/docs/scraper-main.1_2.png?raw=true" />
 </p>
 
-<p align="center"><b>Version: 1.2</b></p>
+<p align="center"><b>Version: 1.3</b></p>
 
 **4scraper** is an open source command line tool written in Go that quickly finds and downloads all images, videos and gifs in a given thread. No setup or installation required, and no fluff.
 
