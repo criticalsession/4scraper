@@ -7,7 +7,7 @@ import (
 	"runtime"
 )
 
-const v = "v1.3" // unreleased
+const v = "v1.3"
 
 func ParseFlags() (bool, string, string) {
 	var sil, help, ver bool
