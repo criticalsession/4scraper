@@ -22,3 +22,10 @@ func DirExists(dir string) bool {
 func GetExtension(filename string) string {
 	return filepath.Ext(filename)
 }
+
+func SplitFilename(filename string) (baseName string, ext string) {
+	ext = GetExtension(filename)
+	baseName = filename[:len(filename)-len(ext)]
+
+	return
+}

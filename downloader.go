@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/google/uuid"
+	"github.com/mrz1836/go-sanitize"
 )
 
 func DownloadFile(url, dir, filename string, useOriginalFilename bool) error {
@@ -28,6 +29,10 @@ func DownloadFile(url, dir, filename string, useOriginalFilename bool) error {
 	} else {
 		filename = genUniqueFilename(filename)
 	}
+
+	baseName, ext := SplitFilename(filename)
+	baseName = sanitize.AlphaNumeric(baseName, false)
+	filename = fmt.Sprintf("%s.%s", baseName, ext)
 
 	if FileExists(dir, filename) {
 		filename = tryGenNewFilename(dir, filename)
@@ -49,8 +54,7 @@ func DownloadFile(url, dir, filename string, useOriginalFilename bool) error {
 func tryGenNewFilename(dir, filename string) string {
 	uniqueId := rand.Intn(100000)
 
-	ext := GetExtension(filename)
-	baseName := filename[:len(filename)-len(ext)]
+	baseName, ext := SplitFilename(filename)
 
 	newFilename := fmt.Sprintf("%s.%s%s", baseName, fmt.Sprint(uniqueId), ext)
 	if FileExists(dir, newFilename) {
@@ -64,5 +68,5 @@ func genUniqueFilename(filename string) string {
 	uniqueId := strings.Replace(uuid.NewString(), "-", "", -1)
 	ext := GetExtension(filename)
 
-	return uniqueId + "." + ext
+	return fmt.Sprintf("%s.%s", uniqueId, ext)
 }

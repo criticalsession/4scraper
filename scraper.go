@@ -22,7 +22,7 @@ type DownloadableFile struct {
 
 func main() {
 	// setup
-	silent, url := ParseFlags()
+	silent, outDir, url := ParseFlags()
 	conf := ReadConfig()
 
 	// head
@@ -47,13 +47,18 @@ func main() {
 		return
 	}
 
-	downloadDir := "downloads"
-	if conf.BoardDir {
-		downloadDir += "/" + board
-	}
+	var downloadDir string
+	if len(outDir) > 0 {
+		downloadDir = outDir
+	} else {
+		downloadDir = "downloads"
+		if conf.BoardDir {
+			downloadDir += "/" + board
+		}
 
-	if conf.ThreadDir {
-		downloadDir += "/" + threadId
+		if conf.ThreadDir {
+			downloadDir += "/" + threadId
+		}
 	}
 
 	c := colly.NewCollector(

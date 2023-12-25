@@ -19,8 +19,8 @@
 
 - [1. How to install](#1-how-to-install)
 - [2. How to use](#2-how-to-use)
-    - [2.1 Args and Flags](#21-args-and-flags-v11)
-    - [2.2 Configuration](#22-configuration-v12)
+    - [2.1 Args and Flags](#21-args-and-flags)
+    - [2.2 Configuration](#22-configuration)
 - [3. How it works](#3-how-it-works)
 - [4. Found a bug? Have suggestions?](#4-found-a-bug-have-suggestions)
 - [5. Things I want to add](#5-things-i-want-to-add)
@@ -41,7 +41,7 @@ Click on the thumbnail below to watch the **shortest video tutorial** of your li
     <img src="https://img.youtube.com/vi/2cLXpOMFGdc/0.jpg" alt="Watch the tutorial" width="240"/>
 </a>
 
-### 2.1 Args and Flags [v1.1]
+### 2.1 Args and Flags
 
 Added in v1.1, **4scraper** can now be executed in silent mode by setting the flag and passing a URL as arg. Here's a full description of flags available. More information is available at `4scraper.exe --help`. For brevity I'm using `4scraper.exe` but on linux it would be `./4scraper.bin`:
 
@@ -50,21 +50,19 @@ Usage: 4scraper.exe [options] [URL]
 
 Options:
   -h, --help         Show this help message and exit
+  -o, --output       Specify output directory for downloaded files
   -s, --silent       Run in silent mode (no output), requires URL
   -v, --version      Show version number and exit
 
 Arguments:
   URL                Full 4chan thread URL to scrape
 ```
+#### Additional Notes
 
-In short:
-- `4scraper.exe` will execute as normal; it will prompt you for a `thread URL` and display verbose progress information
-- `4scraper.exe https://boards.4chan.org/g/thread/76759434` will execute normally (verbose) but won't ask you for a `thread URL`
-- `4scraper.exe --silent https://boards.4chan.org/g/thread/76759434` will execute using the `thread URL` provided and won't display verbose output, progress, etc.
+- If no `URL` is provided, the `--silent` flag will be ignored and **4scraper** will ask you to enter a thread URL as if you executed without flags
+- If an `output` directory is specified, it will override the `downloads/board/threadid` directory structure and the `BoardDir` `ThreadDir` options set in config will be ignored
 
-**NOTE:** If no `URL` is provided, the `--silent` flag will be ignored and **4scraper** will ask you to enter a thread URL as if you executed without flags.
-
-### 2.2 Configuration [v1.2]
+### 2.2 Configuration
 
 As of v1.2 you can add a configuration file to setup basic settings. This is entirely optional and the software will run even if there's no config file set. If you'd like to create and setup a config file read on.
 
