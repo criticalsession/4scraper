@@ -1,4 +1,4 @@
-module 4scraper
+module github.com/criticalsession/4scraper
 
 go 1.21.5
 
