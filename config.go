@@ -11,6 +11,7 @@ type Config struct {
 	ThreadDir           bool
 	UseOriginalFilename bool
 	Extensions          []string
+	ParallelDownload    bool
 }
 
 func ReadConfig() Config {
@@ -18,6 +19,7 @@ func ReadConfig() Config {
 		BoardDir:            true,
 		ThreadDir:           true,
 		UseOriginalFilename: true,
+		ParallelDownload:    true,
 		Extensions: []string{"jpeg", "jpg", "png", "gif", "webp", "bpm",
 			"tiff", "svg", "mp4", "mov", "avi", "webm", "flv"},
 	}
@@ -35,7 +37,7 @@ func ReadConfig() Config {
 		for scanner.Scan() {
 			line := scanner.Text()
 			// skip if too short, starts with # or has no equals sign
-			if strings.HasPrefix(line, "#") || len(line) < 5 || strings.Index(line, "=") == -1 {
+			if strings.HasPrefix(line, "#") || len(line) < 5 || !strings.Contains(line, "=") {
 				continue
 			}
 
@@ -46,6 +48,8 @@ func ReadConfig() Config {
 				"\"", "", -1)
 
 			switch key {
+			case "paralleldownload":
+				c.ParallelDownload = val == "true"
 			case "boarddir":
 				c.BoardDir = val == "true"
 			case "threaddir":
@@ -55,7 +59,7 @@ func ReadConfig() Config {
 			case "extensions":
 				if len(val) == 0 { // empty
 					c.Extensions = []string{}
-				} else if strings.Index(val, ",") == -1 { // single extension
+				} else if !strings.Contains(val, ",") { // single extension
 					c.Extensions = []string{val}
 				} else {
 					extensions := strings.Split(val, ",")

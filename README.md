@@ -6,7 +6,7 @@
   <img src="https://github.com/criticalsession/4scraper/blob/feat/config/docs/scraper-main.1_2.png?raw=true" />
 </p>
 
-<p align="center"><b>Version: 1.3</b></p>
+<p align="center"><b>Version: 1.4</b></p>
 
 **4scraper** is an open source command line tool written in Go that quickly finds and downloads all images, videos and gifs in a given thread. No setup or installation required, and no fluff.
 
@@ -23,9 +23,8 @@
     - [2.2 Configuration](#22-configuration)
 - [3. How it works](#3-how-it-works)
 - [4. Found a bug? Have suggestions?](#4-found-a-bug-have-suggestions)
-- [5. Things I want to add](#5-things-i-want-to-add)
-- [6. Known issues](#6-known-issues)
-- [7. Like 4scraper?](#7-like-4scraper)
+- [5. Known issues](#5-known-issues)
+- [6. Like 4scraper?](#6-like-4scraper)
 
 ## 1. How to install
 
@@ -98,16 +97,10 @@ Extensions = "jpeg,jpg,png,gif,webp,bpm,tiff,svg,mp4,mov,avi,webm,flv"
 
 Feel free to use the Issues tab above (or [click here](https://github.com/criticalsession/4scraper/issues)) if you've found bugs, have problems running **4scraper**, have suggestions for improvements or general tips on how I can make the Go code better.
 
-## 5. Things I want to add
+## 5. Known issues
 
-- [x] Optional config file for basic settings (folder organization, types of files to download)
-- [x] Args to skip input with zero feedback to allow for automation
-- [x] --output flag
+- None
 
-## 6. Known issues
-
-- [x] Generating unique filenames is adding an extra `.` before extension
-
-## 7. Like 4scraper?
+## 6. Like 4scraper?
 
 If you're feeling generous, buy me a beer! - https://www.buymeacoffee.com/criticalsession 🍺❤️
