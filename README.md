@@ -72,6 +72,7 @@ As of v1.2 you can add a configuration file to setup basic settings. This is ent
 BoardDir = true
 ThreadDir = true
 UseOriginalFilename = true
+ParallelDownload = true
 Extensions = "jpeg,jpg,png,gif,webp,bpm,tiff,svg,mp4,mov,avi,webm,flv"
 ```
 3. Lines starting with `#` are ignored
@@ -79,9 +80,12 @@ Extensions = "jpeg,jpg,png,gif,webp,bpm,tiff,svg,mp4,mov,avi,webm,flv"
 5. These are the settings you can adjust:
       1. `BoardDir`: if `true` a directory with the board code will be created in the `downloads` directory for organization (e.g. `downloads/g/`)
       2. `ThreadDir`: if `true` a directory with the thread id will be created in the `downloads` or `board` directory for organization (e.g. `downloads/g/4568995/`)
-      3. `Extensions`: any file that isn't in the list won't be downloaded
-      4. `UseOriginalFilename`: if `false` a new unique filename will be generated (using `UUID`)
+      3. `UseOriginalFilename`: if `false` a new unique filename will be generated (using `UUID`)
+      4. `ParallelDownload`: if `true` downloads files concurrently up to a maximum of `20` concurrent threads
+      5. `Extensions`: any file type that isn't in the list won't be downloaded
 6. If both `BoardDir` and `ThreadDir` are turned off, all downloaded files will go in the `downloads/` directory
+
+If no config file is created, the setting defaults are as shown here.
 
 ## 3. How it works
 
@@ -92,6 +96,7 @@ Extensions = "jpeg,jpg,png,gif,webp,bpm,tiff,svg,mp4,mov,avi,webm,flv"
 3. All files found are stored in a `[]DownloadableFile slice` for later and the `ProgressBar` is updated to reflect the total files to download
 4. We create directories in this structure: `downloads/<board>/<threadId>` to hold all downloaded files
 5. For each `DownloadableFile` found we first check if the filename already exists (and append a random number to the filename if it does) then we download it from 4chan
+    - if `ParallelDownloads` is `true`, the download code is called in a go coroutine with a queue that manages maximum threads
 
 ## 4. Found a bug? Have suggestions?
 
