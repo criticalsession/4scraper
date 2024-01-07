@@ -7,6 +7,7 @@ import (
 	"os"
 	"slices"
 	"strings"
+	"sync"
 
 	"github.com/common-nighthawk/go-figure"
 	"github.com/gocolly/colly"
@@ -110,15 +111,34 @@ func main() {
 			BarEnd:        "]",
 		}))
 
-	for _, file := range files {
-		err := DownloadFile(file.Url, downloadDir, file.FileName, conf.UseOriginalFilename)
+	var wg sync.WaitGroup
+	queue := make(chan bool, min(20, len(files)))
+	errs := []error{}
 
-		if err != nil {
-			logErr(err)
+	for i, file := range files {
+		if !conf.ParallelDownload {
+			if err := DownloadFile(file.Url, downloadDir, file.FileName, conf.UseOriginalFilename, silent, bar); err != nil {
+				logErr(err)
+			}
+		} else {
+			wg.Add(1)
+			queue <- true
+			go func(file DownloadableFile, i int) {
+				defer wg.Done()
+				if err := DownloadFile(file.Url, downloadDir, file.FileName, conf.UseOriginalFilename, silent, bar); err != nil {
+					errs = append(errs, err)
+				}
+
+				<-queue
+			}(file, i)
 		}
+	}
 
-		if !silent {
-			bar.Add(1)
+	if conf.ParallelDownload {
+		wg.Wait()
+
+		for _, err := range errs {
+			logErr(err)
 		}
 	}
 
@@ -134,14 +154,14 @@ func extractBoardAndThreadId(urlStr string) (string, string, error) {
 	}
 
 	if !strings.Contains(urlStr, "boards.4chan.org") {
-		return "", "", errors.New("Not a 4chan URL")
+		return "", "", errors.New("not a 4chan URL")
 	}
 
 	urlStr = strings.TrimPrefix(parsed.Path, "boards.4chan.org")
 	urlStr = strings.TrimPrefix(urlStr, "/")
 
 	if len(strings.Split(urlStr, "/")) < 3 {
-		return "", "", errors.New("Not a valid thread URL")
+		return "", "", errors.New("not a valid thread URL")
 	}
 
 	board := strings.Split(urlStr, "/")[0]
@@ -174,5 +194,5 @@ func addLinkToDownloadableFiles(h *colly.HTMLElement, extensions *[]string, file
 }
 
 func logErr(err error) {
-	colorstring.Printf("[red]ERROR: %s\n", err.Error())
+	colorstring.Printf("\n[red]ERROR: %s\n", err.Error())
 }

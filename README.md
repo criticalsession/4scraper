@@ -12,7 +12,7 @@
   <img src="https://github.com/criticalsession/4scraper/blob/feat/config/docs/scraper-main.1_2.png?raw=true" />
 </p>
 
-<p align="center"><b>Version: 1.3</b></p>
+<p align="center"><b>Version: 1.4</b></p>
 
 **4scraper** is an open source command line tool written in Go that quickly finds and downloads all images, videos and gifs in a given thread. No setup or installation required, and no fluff.
 
@@ -29,9 +29,8 @@
     - [2.2 Configuration](#22-configuration)
 - [3. How it works](#3-how-it-works)
 - [4. Found a bug? Have suggestions?](#4-found-a-bug-have-suggestions)
-- [5. Things I want to add](#5-things-i-want-to-add)
-- [6. Known issues](#6-known-issues)
-- [7. Like 4scraper?](#7-like-4scraper)
+- [5. Known issues](#5-known-issues)
+- [6. Like 4scraper?](#6-like-4scraper)
 
 ## 1. How to install
 
@@ -79,6 +78,7 @@ As of v1.2 you can add a configuration file to setup basic settings. This is ent
 BoardDir = true
 ThreadDir = true
 UseOriginalFilename = true
+ParallelDownload = true
 Extensions = "jpeg,jpg,png,gif,webp,bpm,tiff,svg,mp4,mov,avi,webm,flv"
 ```
 3. Lines starting with `#` are ignored
@@ -86,9 +86,12 @@ Extensions = "jpeg,jpg,png,gif,webp,bpm,tiff,svg,mp4,mov,avi,webm,flv"
 5. These are the settings you can adjust:
       1. `BoardDir`: if `true` a directory with the board code will be created in the `downloads` directory for organization (e.g. `downloads/g/`)
       2. `ThreadDir`: if `true` a directory with the thread id will be created in the `downloads` or `board` directory for organization (e.g. `downloads/g/4568995/`)
-      3. `Extensions`: any file that isn't in the list won't be downloaded
-      4. `UseOriginalFilename`: if `false` a new unique filename will be generated (using `UUID`)
+      3. `UseOriginalFilename`: if `false` a new unique filename will be generated (using `UUID`)
+      4. `ParallelDownload`: if `true` downloads files concurrently up to a maximum of `20` concurrent threads
+      5. `Extensions`: any file type that isn't in the list won't be downloaded
 6. If both `BoardDir` and `ThreadDir` are turned off, all downloaded files will go in the `downloads/` directory
+
+If no config file is created, the setting defaults are as shown here.
 
 ## 3. How it works
 
@@ -99,21 +102,16 @@ Extensions = "jpeg,jpg,png,gif,webp,bpm,tiff,svg,mp4,mov,avi,webm,flv"
 3. All files found are stored in a `[]DownloadableFile slice` for later and the `ProgressBar` is updated to reflect the total files to download
 4. We create directories in this structure: `downloads/<board>/<threadId>` to hold all downloaded files
 5. For each `DownloadableFile` found we first check if the filename already exists (and append a random number to the filename if it does) then we download it from 4chan
+    - if `ParallelDownloads` is `true`, the download code is called in a go coroutine with a queue that manages maximum threads
 
 ## 4. Found a bug? Have suggestions?
 
 Feel free to use the Issues tab above (or [click here](https://github.com/criticalsession/4scraper/issues)) if you've found bugs, have problems running **4scraper**, have suggestions for improvements or general tips on how I can make the Go code better.
 
-## 5. Things I want to add
+## 5. Known issues
 
-- [x] Optional config file for basic settings (folder organization, types of files to download)
-- [x] Args to skip input with zero feedback to allow for automation
-- [x] --output flag
+- None
 
-## 6. Known issues
-
-- [x] Generating unique filenames is adding an extra `.` before extension
-
-## 7. Like 4scraper?
+## 6. Like 4scraper?
 
 If you're feeling generous, buy me a beer! - https://www.buymeacoffee.com/criticalsession 🍺❤️

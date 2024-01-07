@@ -11,9 +11,12 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/mrz1836/go-sanitize"
+	"github.com/schollz/progressbar/v3"
 )
 
-func DownloadFile(url, dir, filename string, useOriginalFilename bool) error {
+func DownloadFile(url, dir, filename string, useOriginalFilename bool, silent bool,
+	bar *progressbar.ProgressBar) error {
+
 	if !DirExists(dir) {
 		os.MkdirAll(dir, os.ModePerm)
 	}
@@ -47,6 +50,10 @@ func DownloadFile(url, dir, filename string, useOriginalFilename bool) error {
 	defer file.Close()
 
 	_, err = io.Copy(file, resp.Body)
+
+	if !silent {
+		bar.Add(1)
+	}
 
 	return err
 }
