@@ -25,9 +25,6 @@ type DownloadableFile struct {
 func main() {
 	// setup
 	flags := ParseFlags()
-	silent := flags.Silent
-	outDir := flags.OutDir
-	url := flags.Url
 
 	if flags.IsSearch {
 		threads, err := search.FindInBoard(flags.SearchBoard, flags.SearchTerms)
@@ -38,8 +35,23 @@ func main() {
 
 		for _, t := range threads {
 			fmt.Printf("https://boards.4chan.org/%s/thread/%d\n", flags.SearchBoard, t.No)
+			if t.Sub != "" {
+				fmt.Printf("  %s\n", t.Sub)
+			}
+
+			if t.Com != "" {
+				fmt.Printf("  %s\n", t.Com)
+			}
+
+			fmt.Println()
 		}
+
+		return
 	} else {
+		silent := flags.Silent
+		outDir := flags.OutDir
+		url := flags.Url
+
 		// config
 		conf := ReadConfig()
 

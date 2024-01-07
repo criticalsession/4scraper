@@ -46,6 +46,20 @@ func FindInBoard(board string, keywords []string) ([]Thread, error) {
 			}
 
 			if match {
+				t.Com = strings.ReplaceAll(t.Com, "<br>", "\n")
+				t.Com = strings.ReplaceAll(t.Com, "&#039;", "'")
+				t.Com = strings.ReplaceAll(t.Com, "&gt;", ">")
+				t.Com = strings.ReplaceAll(t.Com, "&quot;", "\"")
+				t.Com = strings.ReplaceAll(t.Com, "<span class=\"quote\">", "")
+				t.Com = strings.ReplaceAll(t.Com, "</span>", "")
+
+				t.Sub = strings.ReplaceAll(t.Sub, "<br>", "\n")
+				t.Sub = strings.ReplaceAll(t.Sub, "&#039;", "'")
+				t.Sub = strings.ReplaceAll(t.Sub, "&gt;", ">")
+				t.Sub = strings.ReplaceAll(t.Sub, "&quot;", "\"")
+				t.Sub = strings.ReplaceAll(t.Sub, "<span class=\"quote\">", "")
+				t.Sub = strings.ReplaceAll(t.Sub, "</span>", "")
+
 				threads = append(threads, t)
 			}
 		}
