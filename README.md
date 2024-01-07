@@ -16,10 +16,10 @@
 
 **4scraper** is an open source command line tool written in Go that quickly finds and downloads all images, videos and gifs in a given thread. No setup or installation required, and no fluff.
 
-* Run **4scraper**
-* Enter/paste the thread you'd like to download from and press `Enter`
-* Wait for the download to finish
-* Profit
+1. Run **4scraper**
+2. Enter/paste the thread you'd like to download from and press `Enter`
+3. Wait for the download to finish
+4. Profit
 
 ## Contents
 
