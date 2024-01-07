@@ -51,21 +51,35 @@ Click on the thumbnail below to watch the **shortest video tutorial** of your li
 Added in v1.1, **4scraper** can now be executed in silent mode by setting the flag and passing a URL as arg. Here's a full description of flags available. More information is available at `4scraper.exe --help`. For brevity I'm using `4scraper.exe` but on linux it would be `./4scraper.bin`:
 
 ```
-Usage: 4scraper.exe [options] [URL]
+Usage: 
+  4scraper.exe [options] [URL]
 
-Options:
-  -h, --help         Show this help message and exit
-  -o, --output       Specify output directory for downloaded files
-  -s, --silent       Run in silent mode (no output), requires URL
-  -v, --version      Show version number and exit
+  [URL]                
+    Full 4chan thread URL to download files from
 
-Arguments:
-  URL                Full 4chan thread URL to scrape
+OPTIONS:
+  -h, --help         
+    Show this help message and exit
+
+  -v, --version      
+    Show version number and exit
+
+  -o, --output [DIRECTORY]
+    Specify output directory for downloaded files
+
+  -s, --silent       
+    Run in silent mode (no output), requires URL
+
+  -f, --find [BOARD] [KEYWORDS]
+    Search for threads in the specified board that match the given keywords
+    [BOARD] is the name of the 4chan board (e.g., 'g')
+    [KEYWORDS] are the terms to search for (e.g., 'linux desktop')  
 ```
 #### Additional Notes
 
-- If no `URL` is provided, the `--silent` flag will be ignored and **4scraper** will ask you to enter a thread URL as if you executed without flags
-- If an `output` directory is specified, it will override the `downloads/board/threadid` directory structure and the `BoardDir` `ThreadDir` options set in config will be ignored
+- If no `URL` is provided, the `--silent` flag will be ignored and **4scraper** will ask you to enter a thread URL as if you executed without flags.
+- If an `output` directory is specified, it will override the `downloads/board/threadid` directory structure and the `BoardDir` `ThreadDir` options set in config will be ignored.
+- When using `--find`, the first argument should be the board code, followed by search terms. Search terms must all be found for the thread to be returned.
 
 ### 2.2 Configuration
 
