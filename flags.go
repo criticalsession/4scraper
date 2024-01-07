@@ -9,7 +9,16 @@ import (
 
 const v = "v1.4"
 
-func ParseFlags() (bool, string, string) {
+type FlagSettings struct {
+	Silent      bool
+	OutDir      string
+	Url         string
+	IsSearch    bool
+	SearchTerms []string
+	SearchBoard string
+}
+
+func ParseFlags() FlagSettings {
 	var sil, help, ver, isSearch bool
 	var url, outDir, searchBoard string
 	var searchTerms []string
@@ -47,7 +56,12 @@ func ParseFlags() (bool, string, string) {
 			sil = false // silent cannot be used without a url
 		}
 
-		return sil, outDir, url
+		return FlagSettings{
+			Silent:   sil,
+			OutDir:   outDir,
+			Url:      url,
+			IsSearch: false,
+		}
 	} else {
 		if len(flag.Args()) < 2 {
 			printHelp()
@@ -57,13 +71,12 @@ func ParseFlags() (bool, string, string) {
 		searchBoard = flag.Arg(0)
 		searchTerms = flag.Args()[1:]
 
-		fmt.Println("board", searchBoard)
-		fmt.Println("terms", searchTerms)
-
-		os.Exit(0)
+		return FlagSettings{
+			IsSearch:    true,
+			SearchTerms: searchTerms,
+			SearchBoard: searchBoard,
+		}
 	}
-
-	return sil, outDir, url
 }
 
 func printHelp() {
