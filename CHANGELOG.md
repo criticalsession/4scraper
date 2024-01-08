@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Added
 
 - New parallel download functionality, throttled at 20 concurrent threads at a time. Enable/disable parallel downloads in the config file. Default: `true`.
+- Find functionality allows users to search a specific board for given keywords, then optionally download results. To search threads, run 4scraper from the command line: `4scraper.exe -f g linux desktop` will search for all threads in `/g/` that contain both words `linux` and `desktop`.
 
 ## [v1.3] - 2023-12-25
 
