@@ -4,6 +4,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [v1.4] - 2024-01-08
+
 ### Added
 
 - New parallel download functionality, throttled at 20 concurrent threads at a time. Enable/disable parallel downloads in the config file. Default: `true`.
