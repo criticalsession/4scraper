@@ -9,10 +9,10 @@
 [![X (formerly Twitter) Follow](https://img.shields.io/twitter/follow/criticalsession)](https://twitter.com/criticalsession)
 
 <p align="center">
-  <img src="https://github.com/criticalsession/4scraper/blob/feat/config/docs/scraper-main.1_2.png?raw=true" />
+  <img src="https://github.com/criticalsession/4scraper/blob/main/docs/4scraper_search.gif?raw=true" width="608" />
 </p>
 
-<p align="center"><b>Version: 1.4</b></p>
+<p align="center"><b>Version: 1.4</b> - Thread Search Edition</p>
 
 **4scraper** is an open source command line tool written in Go that quickly finds and downloads all images, videos and gifs in a given thread. No setup or installation required, and no fluff.
 
