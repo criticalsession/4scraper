@@ -6,10 +6,12 @@ import (
 	"net/url"
 	"os"
 	"slices"
+	"strconv"
 	"strings"
 	"sync"
 
 	"github.com/common-nighthawk/go-figure"
+	"github.com/criticalsession/4scraper/config"
 	"github.com/criticalsession/4scraper/search"
 	"github.com/gocolly/colly"
 	"github.com/k0kubun/go-ansi"
@@ -23,42 +25,74 @@ type DownloadableFile struct {
 }
 
 func main() {
-	// setup
-	flags := ParseFlags()
+	flags := config.ParseFlags()
+	conf := config.ReadConfig()
 
 	if flags.IsSearch {
+		figure.NewFigure("4scraper", "rectangles", true).Print()
+		fmt.Printf("%s [%s]\n", config.Version, "Search Mode")
+		colorstring.Println("[dim]https://github.com/criticalsession/4scraper")
+		fmt.Println("")
+
 		threads, err := search.FindInBoard(flags.SearchBoard, flags.SearchTerms)
 		if err != nil {
 			logErr(err)
 			return
 		}
 
-		for _, t := range threads {
-			fmt.Printf("https://boards.4chan.org/%s/thread/%d\n", flags.SearchBoard, t.No)
-			if t.Sub != "" {
-				fmt.Printf("  %s\n", t.Sub)
+		if len(threads) > 0 {
+			colorstring.Printf("Search results for [green]%s[default] in [green]/%s/[default]\n\n", strings.Join(flags.SearchTerms, ", "), flags.SearchBoard)
+			for i, t := range threads {
+				colorstring.Printf("[bold][green][%d][default] https://boards.4chan.org/%s/thread/%d (Images: %d)\n", i+1, flags.SearchBoard, t.No, t.Images+1)
+				if t.Sub != "" {
+					fmt.Printf("  %s\n", t.Sub)
+				}
+
+				if t.Com != "" {
+					fmt.Printf("  %s\n", t.Com)
+				}
+
+				fmt.Println()
 			}
 
-			if t.Com != "" {
-				fmt.Printf("  %s\n", t.Com)
-			}
+			var downOption string
+			colorstring.Print("> Enter [green][number][default] to download thread, [green]all[default] to download all, [green]q[default] to quit: ")
+			fmt.Fscan(os.Stdin, &downOption)
 
-			fmt.Println()
+			downOption = strings.ToLower(downOption)
+
+			threadId, err := strconv.ParseInt(downOption, 10, 32)
+			if err != nil {
+				if downOption == "all" || downOption == "a" {
+					for _, t := range threads {
+						url := fmt.Sprintf("https://boards.4chan.org/%s/thread/%d", flags.SearchBoard, t.No)
+						colorstring.Printf("\nDownloading thread [green]%d[default]...\n", t.No)
+						downloadUrl(url, flags, conf)
+					}
+				} else {
+					return
+				}
+			} else {
+				threadId -= 1
+				if threadId >= 0 && int(threadId) < len(threads) {
+					colorstring.Printf("\nDownloading thread [green]%d[default]...\n", threads[threadId].No)
+					url := fmt.Sprintf("https://boards.4chan.org/%s/thread/%d", flags.SearchBoard, threads[threadId].No)
+					downloadUrl(url, flags, conf)
+				} else {
+					logErr(errors.New("invalid thread number"))
+				}
+			}
+		} else {
+			fmt.Printf("No results found for %s in /%s/\n\n", strings.Join(flags.SearchTerms, ", "), flags.SearchBoard)
+			return
 		}
-
-		return
 	} else {
-		silent := flags.Silent
-		outDir := flags.OutDir
 		url := flags.Url
 
-		// config
-		conf := ReadConfig()
-
 		// head
-		if !silent {
+		if !flags.Silent {
 			figure.NewFigure("4scraper", "rectangles", true).Print()
-			fmt.Println(v)
+			fmt.Printf("%s [%s]\n", config.Version, "Download Mode")
 			fmt.Println("https://github.com/criticalsession/4scraper")
 			fmt.Println("")
 
@@ -70,109 +104,112 @@ func main() {
 			}
 		}
 
-		// build download dir
-		board, threadId, err := extractBoardAndThreadId(url)
-		if err != nil {
-			logErr(err)
-			return
+		downloadUrl(url, flags, conf)
+		if !flags.Silent {
+			fmt.Println("\nDownload finished. Thank you for using 4scraper!")
+		}
+	}
+}
+
+func downloadUrl(url string, flags config.FlagSettings, conf config.Config) {
+	// build download dir
+	board, threadId, err := extractBoardAndThreadId(url)
+	if err != nil {
+		logErr(err)
+		return
+	}
+
+	var downloadDir string
+	if len(flags.OutDir) > 0 {
+		downloadDir = flags.OutDir
+	} else {
+		downloadDir = "downloads"
+		if conf.BoardDir {
+			downloadDir += "/" + board
 		}
 
-		var downloadDir string
-		if len(outDir) > 0 {
-			downloadDir = outDir
-		} else {
-			downloadDir = "downloads"
-			if conf.BoardDir {
-				downloadDir += "/" + board
-			}
-
-			if conf.ThreadDir {
-				downloadDir += "/" + threadId
-			}
+		if conf.ThreadDir {
+			downloadDir += "/" + threadId
 		}
+	}
 
-		c := colly.NewCollector(
-			colly.AllowedDomains("boards.4chan.org", "i.4cdn.org"),
-		)
+	c := colly.NewCollector(
+		colly.AllowedDomains("boards.4chan.org", "i.4cdn.org"),
+	)
 
-		files := []DownloadableFile{}
+	files := []DownloadableFile{}
 
-		// find files
-		bar := progressbar.NewOptions(-1,
-			progressbar.OptionSetWriter(ansi.NewAnsiStdout()),
-			progressbar.OptionEnableColorCodes(true),
-			progressbar.OptionShowBytes(false),
-			progressbar.OptionSetWidth(15),
-			progressbar.OptionSetDescription("[cyan][1/2][reset] Finding files:"),
-		)
+	// find files
+	bar := progressbar.NewOptions(-1,
+		progressbar.OptionSetWriter(ansi.NewAnsiStdout()),
+		progressbar.OptionEnableColorCodes(true),
+		progressbar.OptionShowBytes(false),
+		progressbar.OptionSetWidth(15),
+		progressbar.OptionSetDescription("[cyan][1/2][reset] Finding files:"),
+	)
 
-		c.OnHTML(".fileText > a", func(h *colly.HTMLElement) {
-			addLinkToDownloadableFiles(h, &conf.Extensions, &files)
+	c.OnHTML(".fileText > a", func(h *colly.HTMLElement) {
+		addLinkToDownloadableFiles(h, &conf.Extensions, &files)
 
-			if !silent {
-				bar.Add(1)
-			}
-		})
-
-		c.Visit(url)
-
-		if len(files) == 0 && !silent {
-			fmt.Println("No files found to download.")
-			return
+		if !flags.Silent {
+			bar.Add(1)
 		}
+	})
 
-		// download files
-		bar.Reset()
-		bar = progressbar.NewOptions(len(files),
-			progressbar.OptionSetWriter(ansi.NewAnsiStdout()),
-			progressbar.OptionEnableColorCodes(true),
-			progressbar.OptionShowBytes(false),
-			progressbar.OptionSetElapsedTime(true),
-			progressbar.OptionSetPredictTime(true),
-			progressbar.OptionShowCount(),
-			progressbar.OptionFullWidth(),
-			progressbar.OptionSetDescription("[cyan][2/2][reset] Downloading:"),
-			progressbar.OptionSetTheme(progressbar.Theme{
-				Saucer:        "[green]=[reset]",
-				SaucerHead:    "[green]>[reset]",
-				SaucerPadding: " ",
-				BarStart:      "[",
-				BarEnd:        "]",
-			}))
+	c.Visit(url)
 
-		var wg sync.WaitGroup
-		queue := make(chan bool, min(20, len(files)))
-		errs := []error{}
+	if len(files) == 0 && !flags.Silent {
+		fmt.Println("No files found to download.")
+		return
+	}
 
-		for i, file := range files {
-			if !conf.ParallelDownload {
-				if err := DownloadFile(file.Url, downloadDir, file.FileName, conf.UseOriginalFilename, silent, bar); err != nil {
-					logErr(err)
-				}
-			} else {
-				wg.Add(1)
-				queue <- true
-				go func(file DownloadableFile, i int) {
-					defer wg.Done()
-					if err := DownloadFile(file.Url, downloadDir, file.FileName, conf.UseOriginalFilename, silent, bar); err != nil {
-						errs = append(errs, err)
-					}
+	// download files
+	bar.Reset()
+	bar = progressbar.NewOptions(len(files),
+		progressbar.OptionSetWriter(ansi.NewAnsiStdout()),
+		progressbar.OptionEnableColorCodes(true),
+		progressbar.OptionShowBytes(false),
+		progressbar.OptionSetElapsedTime(true),
+		progressbar.OptionSetPredictTime(true),
+		progressbar.OptionShowCount(),
+		progressbar.OptionFullWidth(),
+		progressbar.OptionSetDescription("[cyan][2/2][reset] Downloading:"),
+		progressbar.OptionSetTheme(progressbar.Theme{
+			Saucer:        "[green]=[reset]",
+			SaucerHead:    "[green]>[reset]",
+			SaucerPadding: " ",
+			BarStart:      "[",
+			BarEnd:        "]",
+		}))
 
-					<-queue
-				}(file, i)
-			}
-		}
+	var wg sync.WaitGroup
+	queue := make(chan bool, min(20, len(files)))
+	errs := []error{}
 
-		if conf.ParallelDownload {
-			wg.Wait()
-
-			for _, err := range errs {
+	for i, file := range files {
+		if !conf.ParallelDownload {
+			if err := DownloadFile(file.Url, downloadDir, file.FileName, conf.UseOriginalFilename, flags.Silent, bar); err != nil {
 				logErr(err)
 			}
-		}
+		} else {
+			wg.Add(1)
+			queue <- true
+			go func(file DownloadableFile, i int) {
+				defer wg.Done()
+				if err := DownloadFile(file.Url, downloadDir, file.FileName, conf.UseOriginalFilename, flags.Silent, bar); err != nil {
+					errs = append(errs, err)
+				}
 
-		if !silent {
-			fmt.Println("\nDownload finished. Thank you for using 4scraper!")
+				<-queue
+			}(file, i)
+		}
+	}
+
+	if conf.ParallelDownload {
+		wg.Wait()
+
+		for _, err := range errs {
+			logErr(err)
 		}
 	}
 }

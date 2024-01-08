@@ -1,4 +1,4 @@
-package main
+package config
 
 import (
 	"flag"
@@ -7,7 +7,7 @@ import (
 	"runtime"
 )
 
-const v = "v1.4"
+const Version = "v1.4"
 
 type FlagSettings struct {
 	Silent      bool
@@ -144,5 +144,5 @@ Examples:
 }
 
 func printVersion() {
-	fmt.Println("4scraper", v)
+	fmt.Println("4scraper", Version)
 }

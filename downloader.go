@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/criticalsession/4scraper/file"
 	"github.com/google/uuid"
 	"github.com/mrz1836/go-sanitize"
 	"github.com/schollz/progressbar/v3"
@@ -17,7 +18,7 @@ import (
 func DownloadFile(url, dir, filename string, useOriginalFilename bool, silent bool,
 	bar *progressbar.ProgressBar) error {
 
-	if !DirExists(dir) {
+	if !file.DirExists(dir) {
 		os.MkdirAll(dir, os.ModePerm)
 	}
 
@@ -33,11 +34,11 @@ func DownloadFile(url, dir, filename string, useOriginalFilename bool, silent bo
 		filename = genUniqueFilename(filename)
 	}
 
-	baseName, ext := SplitFilename(filename)
+	baseName, ext := file.SplitFilename(filename)
 	baseName = sanitize.AlphaNumeric(baseName, false)
 	filename = fmt.Sprintf("%s%s", baseName, ext)
 
-	if FileExists(dir, filename) {
+	if file.FileExists(dir, filename) {
 		filename = tryGenNewFilename(dir, filename)
 	}
 
@@ -61,10 +62,10 @@ func DownloadFile(url, dir, filename string, useOriginalFilename bool, silent bo
 func tryGenNewFilename(dir, filename string) string {
 	uniqueId := rand.Intn(100000)
 
-	baseName, ext := SplitFilename(filename)
+	baseName, ext := file.SplitFilename(filename)
 
 	newFilename := fmt.Sprintf("%s.%s%s", baseName, fmt.Sprint(uniqueId), ext)
-	if FileExists(dir, newFilename) {
+	if file.FileExists(dir, newFilename) {
 		return tryGenNewFilename(dir, filename)
 	}
 
@@ -73,7 +74,7 @@ func tryGenNewFilename(dir, filename string) string {
 
 func genUniqueFilename(filename string) string {
 	uniqueId := strings.Replace(uuid.NewString(), "-", "", -1)
-	ext := GetExtension(filename)
+	ext := file.GetExtension(filename)
 
 	return fmt.Sprintf("%s%s", uniqueId, ext)
 }

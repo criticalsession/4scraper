@@ -1,9 +1,11 @@
-package main
+package config
 
 import (
 	"bufio"
 	"os"
 	"strings"
+
+	"github.com/criticalsession/4scraper/file"
 )
 
 type Config struct {
@@ -26,7 +28,7 @@ func ReadConfig() Config {
 
 	const configFile string = "4scraper.config"
 
-	if FileExists("", configFile) {
+	if file.FileExists("", configFile) {
 		file, err := os.Open(configFile)
 		if err != nil {
 			return c

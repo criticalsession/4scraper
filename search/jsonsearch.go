@@ -17,6 +17,7 @@ type Thread struct {
 	Sticky int
 	Com    string
 	Sub    string
+	Images int
 }
 
 func (t *Thread) getCombinedQueryText() string {
@@ -53,12 +54,20 @@ func FindInBoard(board string, keywords []string) ([]Thread, error) {
 				t.Com = strings.ReplaceAll(t.Com, "<span class=\"quote\">", "")
 				t.Com = strings.ReplaceAll(t.Com, "</span>", "")
 
+				if len(t.Com) > 200 {
+					t.Com = t.Com[:200] + "..."
+				}
+
 				t.Sub = strings.ReplaceAll(t.Sub, "<br>", "\n")
 				t.Sub = strings.ReplaceAll(t.Sub, "&#039;", "'")
 				t.Sub = strings.ReplaceAll(t.Sub, "&gt;", ">")
 				t.Sub = strings.ReplaceAll(t.Sub, "&quot;", "\"")
 				t.Sub = strings.ReplaceAll(t.Sub, "<span class=\"quote\">", "")
 				t.Sub = strings.ReplaceAll(t.Sub, "</span>", "")
+
+				if len(t.Sub) > 200 {
+					t.Sub = t.Sub[:200] + "..."
+				}
 
 				threads = append(threads, t)
 			}
