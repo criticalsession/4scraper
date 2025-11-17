@@ -19,7 +19,7 @@
 1. Run **4scraper**
 2. Enter/paste the thread you'd like to download from and press `Enter`
 3. Wait for the download to finish
-4. Profit
+4. Profit 
 
 ## Contents
 
